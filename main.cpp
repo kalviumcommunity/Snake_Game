@@ -1,63 +1,84 @@
 #include <iostream>
-#include <vector>
+using namespace std;
 
-// Class for the Snake Game
-class SnakeGame
+class Snake
 {
 public:
-    SnakeGame(int width, int height);
+    // It will contain the dimensional variables
 
-    void start();
-    void update();
-    void render();
-    void gameOver();
-
-private:
-    int width_;
-    int height_;
-    bool gameOver_;
-    int score_;
-
-    // Class for the Snake
-    class Snake
+    void Draw()
     {
-    public:
-        Snake(int x, int y);
+        // This will contain the draw function code.
+    }
 
-        void move();
-        void grow();
-        bool checkCollision(int x, int y);
-
-    private:
-        std::vector<std::pair<int, int>> body_;
-        int direction_;
-    };
-
-    // Class for the Food (Apple)
-    class Food
+    void Update()
     {
-    public:
-        Food(int width, int height);
+        // This will contain the update function code.
+    }
 
-        void respawn();
-        int getX() const;
-        int getY() const;
-
-    private:
-        int x_;
-        int y_;
-        int width_;
-        int height_;
-    };
-
-    Snake snake_;
-    Food food_;
+    void Reset()
+    {
+        // This will contain the Reset function code.
+    }
 };
 
-// The Main Function
+class Food
+{
+    public :
+        // This will contain the Food parameters.
+        void Draw()
+        {
+            // this will contain the texture and appearance of food
+        }
+        void GenerateRandomCell()
+        {
+            // this will contain the generateRandomCell functionalities
+        }
+
+        void GenerateRandomPos(){
+            // this will contain the generateRandomPos functionalities
+        }
+};
+
+class Game
+{
+    public: 
+        // This will contain the game board parameters. 
+
+        void Draw()
+        {
+            // Will Call the draw methods here
+        }
+
+        void Update()
+        {
+            // Will Call the update methods here
+        }
+
+        void CheckCollisionWithFood()
+        {
+            // Will Add conditionals for checking collision with food here
+        }
+
+        void CheckCollisionWithEdges()
+        {
+            // Will Add conditionals for checking collision with edges here
+        }
+
+        void GameOver()
+        {
+            // Will Add gameOver functionalities here
+        }
+
+        void CheckCollisionWithTail()
+        {
+            // Will Add conditionals for checking collision with tail here
+        }
+};
+
 int main()
 {
-    SnakeGame game(20, 10); 
-    game.start();          
+    cout << "Starting the game..." << endl;
+    Game game = Game();
     return 0;
 }
