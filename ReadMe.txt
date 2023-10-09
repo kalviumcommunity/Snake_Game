@@ -1,6 +1,7 @@
 Welcome to the Classic Snake Game Reimagined!
 -----------------------------------------------------------------------------------------------------------------------------------------------
 Prepare to embark on a nostalgic journey into the world of arcade gaming. But this time, it's not just about the snake; it's about the magic of Object-Oriented Programming (OOP) coming to life. Get ready to code your way through the digital wilderness as you craft your very own Snake Game in C++, where every pixel, every bite, and every twist is a testament to your programming prowess.
+**BELOW ARE THE LINKS OF VIDEO EXPLANATION OF CODE**
 
 🐍 The Snake Awakens: You're not just controlling any snake; you're the architect of its destiny. Design a snake class that slithers gracefully across the screen, with every inch of its body representing an object-oriented masterpiece.
 
@@ -15,3 +16,5 @@ Prepare to embark on a nostalgic journey into the world of arcade gaming. But th
 🪄 Game Logic and Collision: Bring your snake's world to life by using OOP principles to handle collision detection and game-over scenarios. It's all about making sure the snake's journey is as challenging as it is enjoyable.
 
 🎉 The Thrill of Achievement: As you complete this project, you'll not only have a functional Snake Game but also a deeper understanding of how OOP principles can be applied to create interactive, engaging software.
+
+Milestone 2:- https://www.loom.com/share/f90ec79a8c944ef6b2b17e9cd2a6bdb1?sid=336ac7c2-c6e9-4a8c-af39-8fabf74f859a
