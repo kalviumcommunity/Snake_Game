@@ -2,11 +2,41 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <conio.h>
 
 using namespace std;
 
 const int BOARD_WIDTH = 20;
 const int BOARD_HEIGHT = 10;
+
+class GameObject
+{
+public:
+    int x, y;
+    GameObject(int startX, int startY) : x(startX), y(startY) {}
+    virtual void Draw() = 0;
+}
+
+class SnakeSegment : public GameObject
+{
+public:
+    SnakeSegment(int startX, int startY) : GameObject(startX, startY) {}
+    void Draw() override
+    {
+        cout << "S";
+    }
+}
+
+class Food : public GameObject
+{
+public:
+    Food(int startX, int startY) : GameObject(startX, startY) {}
+
+    void Draw() override
+    {
+        cout << "F";    
+    }
+};
 
 class Snake
 {
@@ -30,34 +60,11 @@ public:
     }
 };
 
-class Food
-{
-public:
-    int x, y;
-
-    Food()
-    {
-        // Constructor to initialize food's position
-        GenerateRandomPos();
-    }
-
-    void Draw()
-    {
-        cout << "F";
-    }
-
-    void GenerateRandomPos()
-    {
-        x = rand() % BOARD_WIDTH;
-        y = rand() % BOARD_HEIGHT;
-    }
-};
-
 class Game
 {
 public:
-    vector<Snake> snakes; 
-    vector<Food> foods;   
+    vector<Snake> snakes;
+    vector<Food> foods;
 
     Game()
     {
