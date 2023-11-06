@@ -21,14 +21,15 @@ class GameObject
 public:
     int x, y;
     GameObject(int startX, int startY) : x(startX), y(startY) {}
-    virtual void Draw() = 0;
+    virtual void Draw() const = 0;
+    virtual ~GameObject() {}
 };
 
 class SnakeSegment : public GameObject
 {
 public:
     SnakeSegment(int startX, int startY) : GameObject(startX, startY) {}
-    void Draw() override
+    void Draw() const override
     {
         cout << "S";
     }
@@ -39,7 +40,7 @@ class Food : public GameObject
 public:
     Food(int startX, int startY) : GameObject(startX, startY) {}
 
-    void Draw() override
+    void Draw() const override
     {
         cout << "F";
     }
@@ -48,18 +49,26 @@ public:
 class Snake
 {
 public:
-    vector<SnakeSegment> segments;
+    vector<SnakeSegment *> segments;
     Direction direction;
 
     Snake(int startX, int startY) : direction(Direction::RIGHT)
     {
-        segments.push_back(SnakeSegment(startX, startY));
+        segments.push_back(new SnakeSegment(startX, startY));
+    }
+
+    ~Snake()
+    {
+        for (SnakeSegment *segment : segments)
+        {
+            delete segment;
+        }
     }
 
     void Move()
     {
-        int newX = segments.front().x;
-        int newY = segments.front().y;
+        int newX = segments.front()->x;
+        int newY = segments.front()->y;
 
         switch (direction)
         {
@@ -76,31 +85,43 @@ public:
             newX--;
             break;
         }
-        segments.insert(segments.begin(), SnakeSegment(newX, newY));
+        segments.insert(segments.begin(), new SnakeSegment(newX, newY));
+        delete segments.back();
         segments.pop_back();
     }
 
     void Draw()
     {
-        for (SnakeSegment &segment : segments)
+        for (SnakeSegment *segment : segments)
         {
-            segment.Draw();
+            segment->Draw();
         }
     }
 
     void EatFood()
     {
-        // This will contain EatFood logic
+        int tailX = segments.back()->x;
+        int tailY = segments.back()->y;
+        segments.push_back(new SnakeSegment(tailX, tailY));
     }
 };
 
 class Game
 {
 public:
-    Snake snake;
-    vector<Food> foods;
+    Snake *snake;
+    vector<Food *> foods;
 
-    Game() : snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2) {}
+    Game() : snake(new Snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2)) {}
+
+    ~Game()
+    {
+        delete snake;
+        for (Food *food : foods)
+        {
+            delete food;
+        }
+    }
 
     void GenerateFood()
     {
@@ -110,19 +131,19 @@ public:
             x = rand() % BOARD_WIDTH;
             y = rand() % BOARD_HEIGHT;
         } while (isOccupied(x, y));
-        foods.push_back(Food(x, y));
+        foods.push_back(new Food(x, y));
     }
 
     bool isOccupied(int x, int y)
     {
-        for (const SnakeSegment &segment : snake.segments)
+        for (SnakeSegment *segment : snake->segments)
         {
-            if (segment.x == x && segment.y == y)
+            if (segment->x == x && segment->y == y)
                 return true;
         }
-        for (const Food &food : foods)
+        for (Food *food : foods)
         {
-            if (food.x == x && food.y == y)
+            if (food->x == x && food->y == y)
                 return true;
         }
         return false;
@@ -130,30 +151,27 @@ public:
 
     void Draw()
     {
-        // Drawing the game board, snakes, and food
         for (int i = 0; i < BOARD_HEIGHT; i++)
         {
             for (int j = 0; j < BOARD_WIDTH; j++)
             {
                 bool isSnakeOrFood = false;
 
-                // Check if there's a snake at (j, i)
-                for (const Snake &snake : snakes)
+                for (SnakeSegment *segment : snake->segments)
                 {
-                    if (snake.x == j && snake.y == i)
+                    if (segment->x == j && segment->y == i)
                     {
-                        snake.Draw();
+                        segment->Draw();
                         isSnakeOrFood = true;
                         break;
                     }
                 }
 
-                // Check if there's food at (j, i)
-                for (const Food &food : foods)
+                for (Food *food : foods)
                 {
-                    if (food.x == j && food.y == i)
+                    if (food->x == j && food->y == i)
                     {
-                        food.Draw();
+                        food->Draw();
                         isSnakeOrFood = true;
                         break;
                     }
@@ -170,7 +188,31 @@ public:
 
     void Update()
     {
-        // Function to update the game state, including snake movement, collision detection, and food generation.
+        snake->Move();
+
+        int headX = snake->segments.front()->x;
+        int headY = snake->segments.front()->y;
+
+        for (size_t i = 1; i < snake->segments.size(); i++)
+        {
+            if (snake->segments[i]->x == headX && snake->segments[i]->y == headY)
+            {
+                // Game over
+                exit(0);
+            }
+        }
+
+        for (size_t i = 0; i < foods.size(); i++)
+        {
+            if (foods[i]->x == headX && foods[i]->y == headY)
+            {
+                snake->EatFood();
+                delete foods[i];
+                foods.erase(foods.begin() + i);
+                GenerateFood();
+                break;
+            }
+        }
     }
 };
 
