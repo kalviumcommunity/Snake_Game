@@ -2,20 +2,21 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-#include <conio.h>
 
 using namespace std;
 
 const int BOARD_WIDTH = 20;
 const int BOARD_HEIGHT = 10;
+
 enum class Direction
 {
     UP,
     DOWN,
     LEFT,
     RIGHT
-};
+};  
 
+template <typename T>
 class GameObject
 {
 public:
@@ -25,7 +26,7 @@ public:
     virtual ~GameObject() {}
 };
 
-class SnakeSegment : public GameObject
+class SnakeSegment : public GameObject<SnakeSegment>
 {
 public:
     SnakeSegment(int startX, int startY) : GameObject(startX, startY) {}
@@ -35,7 +36,7 @@ public:
     }
 };
 
-class Food : public GameObject
+class Food : public GameObject<Food>
 {
 public:
     Food(int startX, int startY) : GameObject(startX, startY) {}
@@ -46,20 +47,21 @@ public:
     }
 };
 
-class Snake
+template <typename T>
+class Snake : public GameObject<Snake<T>>
 {
 public:
-    vector<SnakeSegment *> segments;
+    vector<T *> segments;
     Direction direction;
 
     Snake(int startX, int startY) : direction(Direction::RIGHT)
     {
-        segments.push_back(new SnakeSegment(startX, startY));
+        segments.push_back(new T(startX, startY));
     }
 
     ~Snake()
     {
-        for (SnakeSegment *segment : segments)
+        for (T *segment : segments)
         {
             delete segment;
         }
@@ -85,14 +87,15 @@ public:
             newX--;
             break;
         }
-        segments.insert(segments.begin(), new SnakeSegment(newX, newY));
+
+        segments.insert(segments.begin(), new T(newX, newY));
         delete segments.back();
         segments.pop_back();
     }
 
     void Draw()
     {
-        for (SnakeSegment *segment : segments)
+        for (T *segment : segments)
         {
             segment->Draw();
         }
@@ -102,22 +105,23 @@ public:
     {
         int tailX = segments.back()->x;
         int tailY = segments.back()->y;
-        segments.push_back(new SnakeSegment(tailX, tailY));
+        segments.push_back(new T(tailX, tailY));
     }
 };
 
+template <typename T>
 class Game
 {
 public:
-    Snake *snake;
-    vector<Food *> foods;
+    Snake<T> *snake;
+    vector<GameObject<T> *> foods;
 
-    Game() : snake(new Snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2)) {}
+    Game() : snake(new Snake<T>(BOARD_WIDTH / 2, BOARD_HEIGHT / 2)) {}
 
     ~Game()
     {
         delete snake;
-        for (Food *food : foods)
+        for (GameObject<T> *food : foods)
         {
             delete food;
         }
@@ -136,12 +140,12 @@ public:
 
     bool isOccupied(int x, int y)
     {
-        for (SnakeSegment *segment : snake->segments)
+        for (GameObject<T> *segment : snake->segments)
         {
             if (segment->x == x && segment->y == y)
                 return true;
         }
-        for (Food *food : foods)
+        for (GameObject<T> *food : foods)
         {
             if (food->x == x && food->y == y)
                 return true;
@@ -157,7 +161,7 @@ public:
             {
                 bool isSnakeOrFood = false;
 
-                for (SnakeSegment *segment : snake->segments)
+                for (GameObject<T> *segment : snake->segments)
                 {
                     if (segment->x == j && segment->y == i)
                     {
@@ -167,7 +171,7 @@ public:
                     }
                 }
 
-                for (Food *food : foods)
+                for (GameObject<T> *food : foods)
                 {
                     if (food->x == j && food->y == i)
                     {
@@ -216,15 +220,20 @@ public:
     }
 };
 
+void clearScreen()
+{
+    cout << "\033[2J\033[H";
+}
+
 int main()
 {
     srand(time(0));
     cout << "Starting the game..." << endl;
-    Game game;
+    Game<GameObject<int>> game; // You can replace 'int' with the appropriate type for your game
 
     while (true)
     {
-        system("cls");
+        clearScreen();
         game.Draw();
         game.Update();
     }
